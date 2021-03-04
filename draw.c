@@ -127,12 +127,20 @@ int fb_cols(void)
 
 void *fb_mem(int r)
 {
-	return fb + (r + vinfo.yoffset) * finfo.line_length;
+	//return fb + (r + vinfo.yoffset) * finfo.line_length;
+	return fb + ((272-1-r) - vinfo.yoffset) * finfo.line_length;
 }
 
 void fb_set(int r, int c, void *mem, int len)
 {
-	memcpy(fb_mem(r) + (c + vinfo.xoffset) * bpp, mem, len * bpp);
+	//memcpy(fb_mem(r) + (c + vinfo.xoffset) * bpp, mem, len * bpp);
+	int i;
+	unsigned short *fb;
+	unsigned short *p_src = mem;
+
+	fb = ((unsigned short *)fb_mem(r) + ((480-1-c)-vinfo.xoffset));
+	for (i = len; i > 0; i--)
+		fb[i] = *p_src++;
 }
 
 unsigned fb_val(int r, int g, int b)
