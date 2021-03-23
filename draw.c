@@ -8,6 +8,8 @@
 #include <string.h>
 #include "draw.h"
 
+#define CONFIG_ROTATE_180     1
+
 #define MIN(a, b)	((a) < (b) ? (a) : (b))
 #define MAX(a, b)	((a) > (b) ? (a) : (b))
 #define NLEVELS		(1 << 8)
@@ -127,20 +129,26 @@ int fb_cols(void)
 
 void *fb_mem(int r)
 {
-	//return fb + (r + vinfo.yoffset) * finfo.line_length;
-	return fb + ((272-1-r) - vinfo.yoffset) * finfo.line_length;
+#if (CONFIG_ROTATE_180 == 1)
+	return fb + ((vinfo.yres-1-r) - vinfo.yoffset) * finfo.line_length;
+#else
+	return fb + (r + vinfo.yoffset) * finfo.line_length;
+#endif
 }
 
 void fb_set(int r, int c, void *mem, int len)
 {
-	//memcpy(fb_mem(r) + (c + vinfo.xoffset) * bpp, mem, len * bpp);
+#if (CONFIG_ROTATE_180 == 1)
 	int i;
 	unsigned short *fb;
 	unsigned short *p_src = mem;
 
-	fb = ((unsigned short *)fb_mem(r) + ((480-1-c)-vinfo.xoffset));
+	fb = ((unsigned short *)fb_mem(r) + ((vinfo.xres-1-c)-vinfo.xoffset));
 	for (i = len; i > 0; i--)
 		fb[i] = *p_src++;
+#else
+	memcpy(fb_mem(r) + (c + vinfo.xoffset) * bpp, mem, len * bpp);
+#endif
 }
 
 unsigned fb_val(int r, int g, int b)

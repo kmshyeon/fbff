@@ -529,6 +529,8 @@ int main(int argc, char *argv[])
 		if (fb_init())
 			return 1;
 		ffs_vinfo(vffs, &w, &h);
+		printf("vide w : %d\n", w);
+		printf("vide h : %d\n", h);
 		if (magnify != 1 && sizeof(fbval_t) != FBM_BPP(fb_mode()))
 			fprintf(stderr, "fbff: fbval_t does not match\n");
 		if (fullscreen) {
